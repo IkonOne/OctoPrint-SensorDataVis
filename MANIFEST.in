@@ -1,0 +1,4 @@
+include README.md
+recursive-include octoprint_sensordatavis/templates *
+recursive-include octoprint_sensordatavis/translations *
+recursive-include octoprint_sensordatavis/static *
