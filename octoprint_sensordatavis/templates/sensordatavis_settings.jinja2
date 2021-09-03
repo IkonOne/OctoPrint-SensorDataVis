@@ -1,0 +1,22 @@
+<h4>LIMS Box</h4>
+<div class="control-group">
+    <label class="control-label">IP Address</label>
+    <div class="controls">
+        <input type="text" minlength="7" maxlength="15" size="15"
+            data-bind="value: settings.plugins.sensordatavis.lims_ip"
+            pattern="^((\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$"/>
+    </div>
+    <label class="control-label">Port</label>
+    <div class="controls">
+        <input type="number" size="32" data-bind="value: settings.plugins.sensordatavis.lims_port"/>
+    </div>
+</div>
+
+<h4>Arduino UNO</h4>
+<div class="control-group">
+    <label class="control-label">Port</label>
+    <input type="text" size="32" data-bind="value: settings.plugins.sensordatavis.arduino_port" />
+
+    <label class="control-label">Baud</label>
+    <input type="number" size="32" data-bind="value: settings.plugins.sensordatavis.arduino_baud" />
+</div>

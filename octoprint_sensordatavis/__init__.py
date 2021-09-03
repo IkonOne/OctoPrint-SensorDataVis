@@ -1,5 +1,7 @@
 # coding=utf-8
 from __future__ import absolute_import
+from flask import jsonify
+from octoprint_sensordatavis.arduino import *
 
 ### (Don't forget to remove me)
 # This is a basic skeleton for your plugin's __init__.py. You probably want to adjust the class name of your plugin
@@ -13,32 +15,49 @@ import octoprint.plugin
 
 class SensordatavisPlugin(
     octoprint.plugin.SettingsPlugin,
-    octoprint.plugin.AssetPlugin,
     octoprint.plugin.TemplatePlugin,
-    octoprint.plugin.StartupPlugin
+    octoprint.plugin.BlueprintPlugin,
 ):
-    ##-- StartupPlugin mixin
-
-    def on_after_startup(self):
-        self._logger.info("Hi there...")
-
     ##~~ SettingsPlugin mixin
 
     def get_settings_defaults(self):
-        return {
+        arduino_port = ''
+        ports = get_arduino_ports()
+        self._logger.info(ports)
+        if len(ports) > 0:
+            arduino_port = ports[0]
+        self._logger.info(arduino_port)
+
+        return dict(
+            lims_ip='192.168.0.200',
+            lims_port=8080,
+            arduino_port=arduino_port,
+            arduino_baud=115200,
             # put your plugin's default settings here
-        }
+        )
+    
+    ##-- TemplatePlugin mixin
 
-    ##~~ AssetPlugin mixin
+    def get_template_configs(self):
+        return [
+            dict(type="settings", custom_bindings=False)
+        ]
+    
+    def get_template_vars(self):
+        return dict(
+            lims_ip=self._settings.get(["lims_ip"]),
+            arduino_port=self._settings.get(["arduino_port"]),
+        )
 
-    def get_assets(self):
-        # Define your plugin's asset files to automatically include in the
-        # core UI here.
-        return {
-            "js": ["js/sensordatavis.js"],
-            "css": ["css/sensordatavis.css"],
-            "less": ["less/sensordatavis.less"]
-        }
+    ##-- BlueprintPlugin mixin
+    # This is where the rest api is defined
+
+    @octoprint.plugin.BlueprintPlugin.route("/arduino/ports", methods=["GET"])
+    def arduino_ports(self):
+        import arduino
+        ports = arduino.get_ports()
+        r = dict(ports=ports)
+        return jsonify(r)
 
     ##~~ Softwareupdate hook
 
