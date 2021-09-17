@@ -16,7 +16,6 @@ _lims = Lims()
 msgQueue = queue.Queue()
 
 def stream_loop():
-    current = 0
     while True:
         with _lims.terminate_lock:
             if _lims.terminate:
@@ -24,10 +23,12 @@ def stream_loop():
 
         while msgQueue.not_empty:
             msg = msgQueue.get()
-            values_to_set = {
-                'Facility.PrusaMK3.MotorCurrent.Extruder': current,
-            }
-            current += 1
+            values_to_set = dict()
+            for sensor in msg:
+                values_to_set[sensor['lims_field']] = sensor['value']
+            # values_to_set = {
+            #     'Facility.Sensors.FilamentDiameter': msg[''],
+            # }
             _lims.engine.set_current_data_values(values_to_set)
             if _lims.logger is not None:
                 _lims.logger.info(msg)
