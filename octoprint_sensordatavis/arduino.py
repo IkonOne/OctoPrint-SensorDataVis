@@ -24,7 +24,7 @@ def stream_loop(msgQueue):
         
         line = _dat.conn.readline()
         data = json.loads(line)
-        msgQueue.put(data)
+        msgQueue.put(data['sensors'])
         if _dat.logger is not None:
             _dat.logger.info(data)
         
