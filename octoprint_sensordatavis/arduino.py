@@ -26,7 +26,7 @@ def stream_loop(msgQueue):
         data = json.loads(line)
         msgQueue.put(data['sensors'])
         if _dat.logger is not None:
-            _dat.logger.info(data)
+            _dat.logger.info('Arduino: {0}'.data)
         
     _dat.conn.close()
     _dat.conn = None
