@@ -1,0 +1,71 @@
+accessControl:
+  salt: m0BBXuJ8HZ2N4OFvmZU8yf6yM01mkmoP
+api:
+  key: 9C6A735189B34BEA9490305BE150F355
+plugins:
+  announcements:
+    _config_version: 1
+    channels:
+      _blog:
+        read_until: 1627392600
+      _important:
+        read_until: 1521111600
+      _octopi:
+        read_until: 1611568800
+      _plugins:
+        read_until: 1630299600
+      _releases:
+        read_until: 1628685600
+  discovery:
+    upnpUuid: bfc10c0e-960b-448b-ad75-e489cb582aea
+  errortracking:
+    unique_id: 0a57cfec-a043-44f3-b973-87c41fec6844
+  gcodeviewer:
+    _config_version: 1
+  sensordatavis:
+    arduino_sensors:
+    - lims_field: MotorCurrent.E0
+      pin: 14
+      type: analog
+    - lims_field: MotorCurrent.X0
+      pin: 15
+      type: analog
+    - lims_field: MotorCurrent.Y0
+      pin: 16
+      type: analog
+    - lims_field: MotorCurrent.Z0
+      pin: 17
+      type: analog
+    - lims_field: MotorCurrent.Z1
+      pin: 18
+      type: analog
+    lims_ip: 192.168.0.190
+  softwareupdate:
+    _config_version: 9
+  tracking:
+    enabled: false
+    unique_id: d57445c9-3ea0-4149-93fc-9e9e4cd7faf8
+  virtual_printer:
+    _config_version: 1
+server:
+  firstRun: false
+  onlineCheck:
+    enabled: true
+    host: 8.8.8.8
+  pluginBlacklist:
+    enabled: true
+  secretKey: N6EWg4n7RetJoVeSjWOnRl76bKhOTgon
+  seenWizards:
+    backup: null
+    corewizard: 4
+    tracking: null
+temperature:
+  profiles:
+  - bed: 100
+    chamber: null
+    extruder: 210
+    name: ABS
+  - bed: 60
+    chamber: null
+    extruder: 180
+    name: PLA

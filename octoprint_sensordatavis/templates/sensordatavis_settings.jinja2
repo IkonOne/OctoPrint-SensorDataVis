@@ -3,20 +3,24 @@
     <label class="control-label">IP Address</label>
     <div class="controls">
         <input type="text" minlength="7" maxlength="15" size="15"
-            data-bind="value: settings.plugins.sensordatavis.lims_ip"
+            data-bind="value: settings.settings.plugins.sensordatavis.lims_ip"
             pattern="^((\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$"/>
     </div>
     <label class="control-label">Port</label>
     <div class="controls">
-        <input type="number" size="32" data-bind="value: settings.plugins.sensordatavis.lims_port"/>
+        <input type="number" size="32" data-bind="value: settings.settings.plugins.sensordatavis.lims_port"/>
     </div>
 </div>
 
 <h4>Arduino UNO</h4>
 <div class="control-group">
-    <label class="control-label">Port</label>
-    <input type="text" size="32" data-bind="value: settings.plugins.sensordatavis.arduino_port" />
+    <label for="arduino_ports" class="control-label">{{ _('Port') }}</label>
+    <div class="controls">
+        <select id="arduino_ports" data-test-id="arduino-ports" data-bind="options: availablePorts, value: currentPort, valueUpdate: onPortSelected" />
+    </div>
 
-    <label class="control-label">Baud</label>
-    <input type="number" size="32" data-bind="value: settings.plugins.sensordatavis.arduino_baud" />
+    <label for="arduino_baud" class="control-label">{{ _('Baud') }}</label>
+    <div class="controls">
+        <input id="arduino_baud" type="number" size="32" data-bind="value: arduino_baud" />
+    </div>
 </div>

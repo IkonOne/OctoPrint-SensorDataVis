@@ -1,7 +1,8 @@
 # coding=utf-8
 from __future__ import absolute_import
-from flask import jsonify
-from octoprint_sensordatavis.arduino import *
+from flask import json, jsonify, request
+import octoprint_sensordatavis.arduino as arduino
+import octoprint_sensordatavis.lims as lims
 
 ### (Don't forget to remove me)
 # This is a basic skeleton for your plugin's __init__.py. You probably want to adjust the class name of your plugin
@@ -14,15 +15,24 @@ from octoprint_sensordatavis.arduino import *
 import octoprint.plugin
 
 class SensordatavisPlugin(
+    octoprint.plugin.AssetPlugin,
     octoprint.plugin.SettingsPlugin,
     octoprint.plugin.TemplatePlugin,
     octoprint.plugin.BlueprintPlugin,
+    octoprint.plugin.EventHandlerPlugin
 ):
+    ##-- AssetPlugin mixin
+
+    def get_assets(self):
+        return dict(
+            js=['js/arduino.js']
+        )
+
     ##~~ SettingsPlugin mixin
 
     def get_settings_defaults(self):
         arduino_port = ''
-        ports = get_arduino_ports()
+        ports = arduino.get_ports()
         self._logger.info(ports)
         if len(ports) > 0:
             arduino_port = ports[0]
@@ -40,25 +50,50 @@ class SensordatavisPlugin(
 
     def get_template_configs(self):
         return [
-            dict(type="settings", custom_bindings=False)
+            dict(type="settings", custom_bindings=True)
         ]
     
     def get_template_vars(self):
-        return dict(
+        vars = dict(
             lims_ip=self._settings.get(["lims_ip"]),
+            lims_port=self._settings.get(["lims_port"]),
             arduino_port=self._settings.get(["arduino_port"]),
+            arduino_baud=self._settings.get(["arduino_baud"])
         )
+        return vars
 
     ##-- BlueprintPlugin mixin
     # This is where the rest api is defined
 
     @octoprint.plugin.BlueprintPlugin.route("/arduino/ports", methods=["GET"])
     def arduino_ports(self):
-        import arduino
         ports = arduino.get_ports()
-        r = dict(ports=ports)
-        return jsonify(r)
+        response = dict(ports=ports)
+        return jsonify(response)
+    
+    @octoprint.plugin.BlueprintPlugin.route("/arduino/baud", methods=["GET"])
+    def arduino_baud(self):
+        response = dict(baud=115200)
+        return jsonify(response)
+    
+    ##-- EventHandlerPlugin mixin
 
+    def on_event(self, event, payload):
+        if event == 'Startup':
+            lims_ip = self._settings.get(["lims_ip"])
+            lims_port = self._settings.get(["lims_port"])
+            lims.start_streaming(lims_ip, lims_port, self._logger)
+
+            port = self._settings.get(["arduino_port"])
+            baud = self._settings.get(["arduino_baud"])
+            sensors = self._settings.get(["arduino_sensors"])
+            arduino.start_streaming(port, baud, lims.msgQueue, sensors, self._logger)
+        if event == 'Shutdown':
+            arduino.stop_streaming()
+            lims.stop_streaming()
+
+        return super().on_event(event, payload)
+    
     ##~~ Softwareupdate hook
 
     def get_update_information(self):
