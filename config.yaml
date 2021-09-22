@@ -2,8 +2,6 @@ accessControl:
   salt: m0BBXuJ8HZ2N4OFvmZU8yf6yM01mkmoP
 api:
   key: 9C6A735189B34BEA9490305BE150F355
-events:
-  enabled: true
 plugins:
   announcements:
     _config_version: 1
@@ -25,22 +23,6 @@ plugins:
   gcodeviewer:
     _config_version: 1
   sensordatavis:
-    arduino_sensors:
-    - lims_field: MotorCurrent.E0
-      pin: 14
-      type: analog
-    - lims_field: MotorCurrent.X0
-      pin: 15
-      type: analog
-    - lims_field: MotorCurrent.Y0
-      pin: 16
-      type: analog
-    - lims_field: MotorCurrent.Z0
-      pin: 17
-      type: analog
-    - lims_field: MotorCurrent.Z1
-      pin: 18
-      type: analog
     lims_ip: 192.168.0.190
   softwareupdate:
     _config_version: 9
