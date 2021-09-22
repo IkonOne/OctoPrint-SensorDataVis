@@ -16,6 +16,7 @@ _lims = Lims()
 msgQueue = queue.Queue()
 
 def stream_loop():
+    _lims.logger.debug('[LIMS] Started Streaming...')
     while True:
         with _lims.terminate_lock:
             if _lims.terminate:
@@ -29,25 +30,32 @@ def stream_loop():
             # values_to_set = {
             #     'Facility.Sensors.FilamentDiameter': msg[''],
             # }
-            _lims.engine.set_current_data_values(values_to_set)
-            if _lims.logger is not None:
-                _lims.logger.info(msg)
+            if not _lims.engine.set_current_data_values(values_to_set):
+                _lims.logger.debug(f'[LIMS] Failed to set values...\n{values_to_set}')
     
+    _lims.logger.debug('[LIMS] Stopped Streaming...')
     while msgQueue.not_empty:
         msgQueue.get_nowait()
     _lims.engine = None
 
-def start_streaming(ip, port, logger=None):
+def start_streaming(ip, port, logger):
     if _lims.engine is not None:
+        _lims.logger.debug('[LIMS] Stream already started.  Cannot start another...')
         return
-    
+
     _lims.logger = logger
+
+    _lims.logger.debug(f'[LIMS] Connecting to: http://{ip}:{port}')
     _lims.engine = Engine.fromurl(f'http://{ip}:{port}')
+
     _lims.thread = threading.Thread(target=stream_loop)
     _lims.thread.start()
 
 def stop_streaming():
+    _lims.logger.debug('[LIMS] Stopping streaming...')
+
     if _lims.engine is None:
+        _lims.logger.error('[LIMS] No stream to stop...')
         return
     
     with _lims.terminate_lock:

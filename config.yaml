@@ -2,6 +2,8 @@ accessControl:
   salt: m0BBXuJ8HZ2N4OFvmZU8yf6yM01mkmoP
 api:
   key: 9C6A735189B34BEA9490305BE150F355
+events:
+  enabled: true
 plugins:
   announcements:
     _config_version: 1
@@ -47,6 +49,13 @@ plugins:
     unique_id: d57445c9-3ea0-4149-93fc-9e9e4cd7faf8
   virtual_printer:
     _config_version: 1
+    enabled: true
+printerProfiles:
+  default: _default
+serial:
+  autoconnect: true
+  baudrate: 0
+  port: VIRTUAL
 server:
   firstRun: false
   onlineCheck:
