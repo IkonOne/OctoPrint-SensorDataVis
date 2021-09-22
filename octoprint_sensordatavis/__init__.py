@@ -79,18 +79,22 @@ class SensordatavisPlugin(
     ##-- EventHandlerPlugin mixin
 
     def on_event(self, event, payload):
-        if event == 'Startup':
-            lims_ip = self._settings.get(["lims_ip"])
-            lims_port = self._settings.get(["lims_port"])
-            lims.start_streaming(lims_ip, lims_port, self._logger)
+        # printer states: https://docs.octoprint.org/en/master/modules/printer.html#octoprint.printer.PrinterInterface.get_state_id
+        if event == 'PrinterStateChanged':
+            self._logger.debug('Printer State : {1}'.format(event, payload))
+            state_id = payload['state_id']
+            if state_id == 'PRINTING':
+                lims_ip = self._settings.get(["lims_ip"])
+                lims_port = self._settings.get(["lims_port"])
+                lims.start_streaming(lims_ip, lims_port, self._logger)
 
-            port = self._settings.get(["arduino_port"])
-            baud = self._settings.get(["arduino_baud"])
-            sensors = self._settings.get(["arduino_sensors"])
-            arduino.start_streaming(port, baud, lims.msgQueue, sensors, self._logger)
-        if event == 'Shutdown':
-            arduino.stop_streaming()
-            lims.stop_streaming()
+                port = self._settings.get(["arduino_port"])
+                baud = self._settings.get(["arduino_baud"])
+                sensors = self._settings.get(["arduino_sensors"])
+                arduino.start_streaming(port, baud, lims.msgQueue, sensors, self._logger)
+            if state_id == 'OPERATIONAL':
+                arduino.stop_streaming()
+                lims.stop_streaming()
 
         return super().on_event(event, payload)
     

@@ -14,6 +14,7 @@ class Data():
 _dat = Data()
 
 def stream_loop(msgQueue):
+    _dat.logger.debug('[Arduino] Started Streaming...')
     if _dat.conn is None:
         return
 
@@ -25,8 +26,7 @@ def stream_loop(msgQueue):
         line = _dat.conn.readline()
         data = json.loads(line)
         msgQueue.put(data['sensors'])
-        if _dat.logger is not None:
-            _dat.logger.info('Arduino: {0}'.data)
+        # _dat.logger.debug(f'Arduino: {data}')
         
     _dat.conn.close()
     _dat.conn = None
@@ -36,13 +36,16 @@ def get_ports():
     devices = map(lambda p : p.device, ports)
     return list(devices)
 
-def start_streaming(port, baud, msgQueue, sensors, logger=None):
+def start_streaming(port, baud, msgQueue, sensors, logger):
     if _dat.conn is not None:
         return
     _dat.logger = logger
     
-    _dat.conn = serial.Serial(port, baudrate=baud)
+    _dat.logger.debug('Attempting to connect to Arduino at: {0} : {1}'.format(port, baud))
+    _dat.conn = serial.Serial(port, baudrate=baud, timeout=5)
+
     formatted_sensors = dict({'sensors': sensors})
+    _dat.logger.debug('[Arduino] Sending sensor config: {0}'.format(formatted_sensors))
     _dat.conn.write(str(formatted_sensors).encode('utf8'))
     _dat.conn.write(b'\n')
     _dat.thread = threading.Thread(target=stream_loop, args=[msgQueue])
