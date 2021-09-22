@@ -26,7 +26,8 @@ def stream_loop():
             msg = msgQueue.get()
             values_to_set = dict()
             for sensor in msg:
-                values_to_set[sensor['lims_field']] = sensor['value']
+                if 'lims_field' in sensor.keys() and 'value' in sensor.keys():
+                    values_to_set[sensor['lims_field']] = sensor['value']
             # values_to_set = {
             #     'Facility.Sensors.FilamentDiameter': msg[''],
             # }
@@ -52,10 +53,10 @@ def start_streaming(ip, port, logger):
     _lims.thread.start()
 
 def stop_streaming():
-    _lims.logger.debug('[LIMS] Stopping streaming...')
+    if _lims.logger:
+        _lims.logger.debug('[LIMS] Stopping streaming...')
 
     if _lims.engine is None:
-        _lims.logger.error('[LIMS] No stream to stop...')
         return
     
     with _lims.terminate_lock:

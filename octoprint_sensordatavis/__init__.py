@@ -83,7 +83,7 @@ class SensordatavisPlugin(
         if event == 'PrinterStateChanged':
             self._logger.debug('Printer State : {1}'.format(event, payload))
             state_id = payload['state_id']
-            if state_id == 'PRINTING':
+            if state_id == 'STARTING':
                 lims_ip = self._settings.get(["lims_ip"])
                 lims_port = self._settings.get(["lims_port"])
                 lims.start_streaming(lims_ip, lims_port, self._logger)
@@ -92,7 +92,7 @@ class SensordatavisPlugin(
                 baud = self._settings.get(["arduino_baud"])
                 sensors = self._settings.get(["arduino_sensors"])
                 arduino.start_streaming(port, baud, lims.msgQueue, sensors, self._logger)
-            if state_id == 'OPERATIONAL':
+            if state_id in ['OPERATIONAL', 'CANCELLLING']:
                 arduino.stop_streaming()
                 lims.stop_streaming()
 
