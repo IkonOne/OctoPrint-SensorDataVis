@@ -23,25 +23,18 @@ class SensordatavisPlugin(
 ):
     ##-- AssetPlugin mixin
 
-    def get_assets(self):
-        return dict(
-            js=['js/arduino.js']
-        )
+    # def get_assets(self):
+    #     return dict(
+    #         js=['js/arduino.js']
+    #     )
 
     ##~~ SettingsPlugin mixin
 
     def get_settings_defaults(self):
-        arduino_port = ''
-        ports = arduino.get_ports()
-        self._logger.info(ports)
-        if len(ports) > 0:
-            arduino_port = ports[0]
-        self._logger.info(arduino_port)
-
         return dict(
             lims_ip='192.168.0.200',
             lims_port=8080,
-            arduino_port=arduino_port,
+            arduino_port='/dev/ttyACM0',
             arduino_baud=115200,
             # put your plugin's default settings here
         )
@@ -50,17 +43,15 @@ class SensordatavisPlugin(
 
     def get_template_configs(self):
         return [
-            dict(type="settings", custom_bindings=True)
+            dict(type="settings", custom_bindings=False)
         ]
     
-    def get_template_vars(self):
-        vars = dict(
-            lims_ip=self._settings.get(["lims_ip"]),
-            lims_port=self._settings.get(["lims_port"]),
-            arduino_port=self._settings.get(["arduino_port"]),
-            arduino_baud=self._settings.get(["arduino_baud"])
-        )
-        return vars
+    # def get_template_vars(self):
+    #     vars = dict(
+    #         arduino_ports=arduino.get_ports(),
+    #     )
+    #     self._logger.debug(vars)
+    #     return vars
 
     ##-- BlueprintPlugin mixin
     # This is where the rest api is defined

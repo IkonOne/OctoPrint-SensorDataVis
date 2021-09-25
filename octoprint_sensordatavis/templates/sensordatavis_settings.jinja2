@@ -1,4 +1,4 @@
-<h4>LIMS Box</h4>
+{# <h4>LIMS Box</h4>
 <div class="control-group">
     <label class="control-label">IP Address</label>
     <div class="controls">
@@ -10,17 +10,17 @@
     <div class="controls">
         <input type="number" size="32" data-bind="value: settings.settings.plugins.sensordatavis.lims_port"/>
     </div>
-</div>
+</div> #}
 
 <h4>Arduino UNO</h4>
 <div class="control-group">
-    <label for="arduino_ports" class="control-label">{{ _('Port') }}</label>
+    <label class="control-label">{{ _('Port') }}</label>
     <div class="controls">
-        <select id="arduino_ports" data-test-id="arduino-ports" data-bind="options: availablePorts, value: currentPort, valueUpdate: onPortSelected" />
+        <input type="text" class="input-block-level" data-bind="value: settings.plugins.sensordatavis.arduino_port" />
     </div>
 
-    <label for="arduino_baud" class="control-label">{{ _('Baud') }}</label>
+    {# <label for="arduino_baud" class="control-label">{{ _('Baud') }}</label>
     <div class="controls">
         <input id="arduino_baud" type="number" size="32" data-bind="value: arduino_baud" />
-    </div>
+    </div> #}
 </div>
