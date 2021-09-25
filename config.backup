@@ -13,9 +13,9 @@ plugins:
       _octopi:
         read_until: 1611568800
       _plugins:
-        read_until: 1630299600
+        read_until: 1631682000
       _releases:
-        read_until: 1628685600
+        read_until: 1631532900
   discovery:
     upnpUuid: bfc10c0e-960b-448b-ad75-e489cb582aea
   errortracking:
@@ -24,6 +24,7 @@ plugins:
     _config_version: 1
   sensordatavis:
     lims_ip: 192.168.0.190
+    lims_port: '10000'
   softwareupdate:
     _config_version: 9
   tracking:
@@ -36,7 +37,6 @@ printerProfiles:
   default: _default
 serial:
   autoconnect: true
-  baudrate: 0
   port: VIRTUAL
 server:
   firstRun: false
