@@ -40,9 +40,9 @@ def stream_loop():
     _lims.engine = None
 
 def start_streaming(ip, port, logger):
-    if _lims.engine is not None:
-        _lims.logger.debug('[LIMS] Stream already started.  Cannot start another...')
-        return
+    # if _lims.engine is not None:
+    #     _lims.logger.debug('[LIMS] Stream already started.  Cannot start another...')
+    #     return
 
     _lims.logger = logger
 

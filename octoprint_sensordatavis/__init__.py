@@ -32,7 +32,7 @@ class SensordatavisPlugin(
 
     def get_settings_defaults(self):
         return dict(
-            lims_ip='192.168.0.200',
+            lims_ip='192.168.0.190',
             lims_port=8080,
             arduino_port='/dev/ttyACM0',
             arduino_baud=115200,
