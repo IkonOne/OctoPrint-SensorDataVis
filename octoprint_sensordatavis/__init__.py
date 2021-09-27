@@ -35,7 +35,7 @@ class SensordatavisPlugin(
             lims_ip='192.168.0.190',
             lims_port=8080,
             arduino_port='/dev/ttyACM0',
-            arduino_baud=115200,
+            arduino_baud=9600,
             # put your plugin's default settings here
         )
     

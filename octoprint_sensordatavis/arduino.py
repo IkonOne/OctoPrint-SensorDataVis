@@ -56,7 +56,7 @@ def start_streaming(port, baud, msgQueue, sensors, logger):
     _dat.logger = logger
     
     _dat.logger.debug(f'[Arduino] Attempting to connect to Arduino at: {port} : {baud}')
-    _dat.conn = serial.Serial(port, baudrate=baud, timeout=2)
+    _dat.conn = serial.Serial(port, baudrate=baud)
     if not _dat.conn.is_open:
         _dat.logger.debug(f'[Arduino] Failed to connect to port: {port}')
 

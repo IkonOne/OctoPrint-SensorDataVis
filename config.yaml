@@ -24,7 +24,6 @@ plugins:
     _config_version: 1
   sensordatavis:
     arduino_port: /dev/ttyUSB0
-    lims_ip: 192.168.0.190
     lims_port: '10000'
   softwareupdate:
     _config_version: 9
