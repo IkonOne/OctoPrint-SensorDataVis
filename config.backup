@@ -13,7 +13,7 @@ plugins:
       _octopi:
         read_until: 1611568800
       _plugins:
-        read_until: 1631682000
+        read_until: 1632718800
       _releases:
         read_until: 1631532900
   discovery:
@@ -24,7 +24,7 @@ plugins:
     _config_version: 1
   sensordatavis:
     arduino_port: /dev/ttyUSB0
-    lims_port: '10000'
+    lims_port: '8080'
   softwareupdate:
     _config_version: 9
   tracking:
