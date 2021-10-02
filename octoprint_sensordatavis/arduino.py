@@ -35,12 +35,12 @@ def stream_loop(msgQueue):
             line_accum += line.decode()
 
             try:
-                _dat.logger.debug(line_accum)
                 data = json.loads(line_accum)
+                _dat.logger.debug(f'[Arduino] Successfully decoded json: {line_accum}')
                 msgQueue.put(data['sensors'])
                 line_accum = ''
             except JSONDecodeError as err:
-                _dat.logger.debug(f'[Arduino] Message reading timed out...')
+                _dat.logger.debug(f'[Arduino] Failed to decode json: {line_accum}')
         
     _dat.conn.close()
     _dat.conn = None
