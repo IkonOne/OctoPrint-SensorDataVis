@@ -16,15 +16,13 @@ class Data():
 _dat = Data()
 
 def stream_loop(msgQueue):
-    line_accum = ''
-
     _dat.logger.debug('[Arduino] Started Streaming...')
     if _dat.conn is None:
         _dat.logger.error('[Arduino] Not connected to an arduino...')
         return
 
     while True:
-        time.sleep(0.5)
+        time.sleep(0.05)
 
         with _dat.terminate_lock:
             if _dat.terminate:
@@ -32,7 +30,11 @@ def stream_loop(msgQueue):
         
         line = _dat.conn.read_all()
         if len(line) > 0:
-            decoded_line = line.decode()
+            try:
+                decoded_line = line.decode()
+            except UnicodeDecodeError:
+                _dat.logger.debug(f'[Arduino] Failed to decode utf-8: {line}')
+                continue
 
             try:
                 data = json.loads(decoded_line)

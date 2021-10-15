@@ -28,9 +28,11 @@ def stream_loop():
             for sensor in msg:
                 if 'lims_field' in sensor.keys() and 'value' in sensor.keys():
                     values_to_set[sensor['lims_field']] = sensor['value']
-            # values_to_set = {
-            #     'Facility.Sensors.FilamentDiameter': msg[''],
-            # }
+                if 'values' in sensor.keys():
+                    values = sensor['values']
+                    for value in values:
+                        if 'lims_field' in value.keys() and 'value' in value.keys():
+                            values_to_set[value['lims_field']] = value['value']
             if not _lims.engine.set_current_data_values(values_to_set):
                 _lims.logger.debug(f'[LIMS] Failed to set values...\n{values_to_set}')
     
