@@ -22,13 +22,11 @@ def stream_loop(msgQueue):
         return
 
     while True:
-        time.sleep(0.05)
-
         with _dat.terminate_lock:
             if _dat.terminate:
                 break
         
-        line = _dat.conn.read_all()
+        line = _dat.conn.readline()
         if len(line) > 0:
             try:
                 decoded_line = line.decode()
