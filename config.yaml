@@ -13,7 +13,7 @@ plugins:
       _octopi:
         read_until: 1611568800
       _plugins:
-        read_until: 1632718800
+        read_until: 1633410000
       _releases:
         read_until: 1631532900
   discovery:
@@ -23,6 +23,7 @@ plugins:
   gcodeviewer:
     _config_version: 1
   sensordatavis:
+    arduino_baud: '115200'
     lims_port: '8080'
   softwareupdate:
     _config_version: 9
