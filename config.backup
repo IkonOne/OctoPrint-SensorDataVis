@@ -7,7 +7,7 @@ plugins:
     _config_version: 1
     channels:
       _blog:
-        read_until: 1627392600
+        read_until: 1635237900
       _important:
         read_until: 1521111600
       _octopi:
@@ -15,7 +15,83 @@ plugins:
       _plugins:
         read_until: 1633410000
       _releases:
-        read_until: 1631532900
+        read_until: 1633960800
+  bedlevelvisualizer:
+    _config_version: 1
+    command: 'G80
+
+      @BEDLEVELVISUALIZER
+
+      G81'
+    debug_logging: true
+    mesh_timestamp: 10/29/2021, 4:18:10 PM
+    stored_mesh:
+    - - '0.11000'
+      - '0.11528'
+      - '0.08861'
+      - '0.03000'
+      - '-0.06056'
+      - '-0.18306'
+      - '-0.33750'
+    - - '0.11528'
+      - '0.12654'
+      - '0.10414'
+      - '0.04806'
+      - '-0.04170'
+      - '-0.16512'
+      - '-0.32222'
+    - - '0.12111'
+      - '0.13256'
+      - '0.11043'
+      - '0.05472'
+      - '-0.03457'
+      - '-0.15744'
+      - '-0.31389'
+    - - '0.12750'
+      - '0.13333'
+      - '0.10750'
+      - '0.05000'
+      - '-0.03917'
+      - '-0.16000'
+      - '-0.31250'
+    - - '0.13444'
+      - '0.12886'
+      - '0.09534'
+      - '0.03389'
+      - '-0.05549'
+      - '-0.17281'
+      - '-0.31806'
+    - - '0.14194'
+      - '0.11914'
+      - '0.07395'
+      - '0.00639'
+      - '-0.08355'
+      - '-0.19586'
+      - '-0.33056'
+    - - '0.15000'
+      - '0.10417'
+      - '0.04333'
+      - '-0.03250'
+      - '-0.12333'
+      - '-0.22917'
+      - '-0.35000'
+    stored_mesh_x:
+    - 0
+    - 33
+    - 67
+    - 100
+    - 133
+    - 167
+    - 200
+    stored_mesh_y:
+    - 0
+    - 33
+    - 67
+    - 100
+    - 133
+    - 167
+    - 200
+    stored_mesh_z_height: 200
   discovery:
     upnpUuid: bfc10c0e-960b-448b-ad75-e489cb582aea
   errortracking:
@@ -24,6 +100,7 @@ plugins:
     _config_version: 1
   sensordatavis:
     arduino_baud: '115200'
+    arduino_port: /dev/ttyUSB0
     lims_port: '8080'
   softwareupdate:
     _config_version: 9
@@ -37,7 +114,8 @@ printerProfiles:
   default: _default
 serial:
   autoconnect: true
-  port: VIRTUAL
+  baudrate: 115200
+  port: /dev/ttyACM0
 server:
   firstRun: false
   onlineCheck:

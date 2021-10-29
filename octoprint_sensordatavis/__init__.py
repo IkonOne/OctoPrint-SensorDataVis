@@ -3,6 +3,8 @@ from __future__ import absolute_import
 from flask import json, jsonify, request
 import octoprint_sensordatavis.arduino as arduino
 import octoprint_sensordatavis.lims as lims
+import itertools
+import numpy as np
 
 ### (Don't forget to remove me)
 # This is a basic skeleton for your plugin's __init__.py. You probably want to adjust the class name of your plugin
@@ -86,6 +88,35 @@ class SensordatavisPlugin(
             if state_id in ['OPERATIONAL', 'CANCELLLING']:
                 arduino.stop_streaming()
                 lims.stop_streaming()
+        
+        if event == 'plugin_bedlevelvisualizer_mesh_data_collected':
+            # LOLOLO : Did you know that Events.ALL_CAPS_EVENT_NAMES != 'ALL_CAPS_EVENT_NAMES'
+            #   yet Events.ALL_CAPS_EVENT_NAMES == 'all_caps_event_names'
+            # You are a masochist if you like web dev.
+            
+            # Now for something useful
+            # https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/blob/master/octoprint_bedlevelvisualizer/__init__.py#L525
+            #   The payload is a dict containing they keys 'mesh' and 'bed'
+            #   @mesh - Appears to always be a 5x5 matrix of z-levels regardless of the settings on the printer.
+            #   @bed - contains bed type as well as printer volume info (x,y,z min and max)
+
+            # This comment is a lie waiting to happen.  (I think that's from 'The Pragmatic Programmer'...)
+            #   Since the data that we get does not indicate where the probe points are, and that is not given, we guess.
+            #   Good enough for now.
+
+            mesh = np.array(payload['mesh'])
+            printer_volume = payload['bed']
+
+            x_min = int(printer_volume['x_min'])
+            x_max = int(printer_volume['x_max'])
+            x_step = int((x_max - x_min) // (len(mesh) - 1))
+
+            y_min = int(printer_volume['y_min'])
+            y_max = int(printer_volume['y_max'])
+            y_step = int((y_max - y_min) // (len(mesh[0]) - 1))
+
+            probe_points = [[x, y] for x in range(x_min, x_max, x_step) for y in range(y_min, y_max, y_step)]
+            data_collector.record_bed_mesh_data(mesh, probe_points)
 
         return super().on_event(event, payload)
     
