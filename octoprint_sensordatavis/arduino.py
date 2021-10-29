@@ -1,4 +1,5 @@
 from json.decoder import JSONDecodeError
+from octoprint_sensordatavis import data_collector
 import serial
 import serial.tools.list_ports
 import threading
@@ -37,7 +38,9 @@ def stream_loop(msgQueue):
             try:
                 data = json.loads(decoded_line)
                 _dat.logger.debug(f'[Arduino] Successfully decoded json: {decoded_line}')
-                msgQueue.put(data['sensors'])
+                # msgQueue.put(data['sensors'])
+                for sensor in data['sensors']:
+                    data_collector.record_metric(sensor['lims_field'], sensor['value'])
             except JSONDecodeError as err:
                 _dat.logger.debug(f'[Arduino] Failed to decode json: {decoded_line}')
         

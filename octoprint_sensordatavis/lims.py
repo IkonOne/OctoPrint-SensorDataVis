@@ -1,6 +1,8 @@
 import threading
+import time
 import queue
 from solutionfamily.engine import Engine
+from . import data_collector
 
 class Lims():
     def __init__(self) -> None:
@@ -21,20 +23,34 @@ def stream_loop():
         with _lims.terminate_lock:
             if _lims.terminate:
                 break
+        
+        time.sleep(1)
 
-        while msgQueue.not_empty:
-            msg = msgQueue.get()
-            values_to_set = dict()
-            for sensor in msg:
-                if 'lims_field' in sensor.keys() and 'value' in sensor.keys():
-                    values_to_set[sensor['lims_field']] = sensor['value']
-                if 'values' in sensor.keys():
-                    values = sensor['values']
-                    for value in values:
-                        if 'lims_field' in value.keys() and 'value' in value.keys():
-                            values_to_set[value['lims_field']] = value['value']
-            if not _lims.engine.set_current_data_values(values_to_set):
-                _lims.logger.debug(f'[LIMS] Failed to set values...\n{values_to_set}')
+        values_to_set = dict()
+        sensors = data_collector.get_summarized_readings()
+        print(sensors)
+        for key in sensors.keys():
+            sensor = sensors[key]
+            for metric in sensor:
+                values_to_set[key + '.' + metric] = sensor[metric]
+        
+        print(values_to_set)
+        if not _lims.engine.set_current_data_values(values_to_set):
+            _lims.logger.debug(f'[LIMS] Failed to set values...\n{values_to_set}')
+
+        # while msgQueue.not_empty:
+        #     msg = msgQueue.get()
+        #     values_to_set = dict()
+        #     for sensor in msg:
+        #         if 'lims_field' in sensor.keys() and 'value' in sensor.keys():
+        #             values_to_set[sensor['lims_field']] = sensor['value']
+        #         if 'values' in sensor.keys():
+        #             values = sensor['values']
+        #             for value in values:
+        #                 if 'lims_field' in value.keys() and 'value' in value.keys():
+        #                     values_to_set[value['lims_field']] = value['value']
+        #     if not _lims.engine.set_current_data_values(values_to_set):
+        #         _lims.logger.debug(f'[LIMS] Failed to set values...\n{values_to_set}')
     
     _lims.logger.debug('[LIMS] Stopped Streaming...')
     while msgQueue.not_empty:
