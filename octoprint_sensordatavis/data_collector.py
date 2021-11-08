@@ -1,6 +1,8 @@
 import numpy as np
 import threading
 
+from octoprint_sensordatavis import lims
+
 class Metric():
     def __init__(self, lims_field) -> None:
         self.values = []
@@ -11,7 +13,6 @@ class Metric():
     
     def summarize(self):
         arr = np.array(self.values)
-        print(len(self.values))
         return {
             "StandardDeviation": np.std(arr),
             "Average": np.mean(arr),
@@ -20,6 +21,21 @@ class Metric():
     
     def clear(self):
         self.values = []
+
+class BedMeshMetrics():
+    def __init__(self, lims_field, mesh, flatness) -> None:
+        self.lims_field = lims_field
+        self.mesh = mesh
+        self.flatness = flatness
+    
+    def clear(self):
+        pass
+
+    def summarize(self):
+        return {
+            "Mesh": str(self.mesh),
+            "Flatness": self.flatness
+        }
 
 
 _metrics_lock = threading.Lock()
@@ -46,17 +62,14 @@ def record_bed_mesh_data(mesh, probe_points):
 
     probe_points = np.asarray(probe_points)
     mesh = np.asarray(mesh, dtype=np.float64)
-    print(mesh)
 
     lr = linear_model.LinearRegression()
     lr.fit(probe_points, mesh.flatten())
     plane = lr.predict(probe_points).reshape(mesh.shape)
-    flatness_mm = np.max(mesh - plane) - np.min(mesh - plane)
+    flatness_mm = np.abs(np.max(mesh - plane) - np.min(mesh - plane))
 
     with _metrics_lock:
-        _metrics['mesh'] = mesh
-        _metrics['flatness'] = flatness_mm
-        print(_metrics)
+        _metrics["Facility.PrusaMK3.Bed"] = BedMeshMetrics("Facility.PrusaMK3.Bed", mesh, flatness_mm)
 
 def get_summarized_readings():
     data = {}

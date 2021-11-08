@@ -79,7 +79,8 @@ class SensordatavisPlugin(
             if state_id == 'STARTING':
                 lims_ip = self._settings.get(["lims_ip"])
                 lims_port = self._settings.get(["lims_port"])
-                lims.start_streaming(lims_ip, lims_port, self._logger)
+                lims_endpoint = self._settings.get(["lims_endpoint"])
+                lims.start_streaming(lims_ip, lims_port, lims_endpoint, self._logger)
 
                 port = self._settings.get(["arduino_port"])
                 baud = self._settings.get(["arduino_baud"])
