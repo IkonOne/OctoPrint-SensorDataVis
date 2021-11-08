@@ -33,7 +33,7 @@ plugin_url = "https://github.com/IkonOne/OctoPrint-SensorDataVis"
 plugin_license = "AGPLv3"
 
 # Any additional requirements besides OctoPrint should be listed here
-plugin_requires = ['solutionfamily','numpy']
+plugin_requires = ['solutionfamily','numpy', 'scikit-learn']
 
 ### --------------------------------------------------------------------------------------------------------------------
 ### More advanced options that you usually shouldn't have to touch follow after this point
