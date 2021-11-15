@@ -76,5 +76,6 @@ def get_summarized_readings():
     with _metrics_lock:
         for lims_field in _metrics.keys():
             data[lims_field] = _metrics[lims_field].summarize()
-            _metrics[lims_field].clear()
+            # _metrics[lims_field].clear()
+        _metrics.clear()
     return data
