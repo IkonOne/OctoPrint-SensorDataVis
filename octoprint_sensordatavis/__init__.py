@@ -110,13 +110,13 @@ class SensordatavisPlugin(
 
             x_min = int(printer_volume['x_min'])
             x_max = int(printer_volume['x_max'])
-            x_step = int((x_max - x_min) // (len(mesh) - 1))
+            x_step = int(x_max - x_min) // 7
 
             y_min = int(printer_volume['y_min'])
             y_max = int(printer_volume['y_max'])
-            y_step = int((y_max - y_min) // (len(mesh[0]) - 1))
+            y_step = int(y_max - y_min) // 7
 
-            probe_points = [[x, y] for x in range(x_min, x_max, x_step) for y in range(y_min, y_max, y_step)]
+            probe_points = [[x*x_step, y*y_step] for x in range(7) for y in range(7)]
             data_collector.record_bed_mesh_data(mesh, probe_points)
 
         return super().on_event(event, payload)
