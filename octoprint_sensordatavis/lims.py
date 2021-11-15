@@ -71,6 +71,9 @@ def start_streaming(ip, port, endpoint, logger):
     _lims.logger.debug(f'[LIMS] Connecting to: http://{ip}:{port}')
     _lims.engine = Engine.fromurl(f'http://{ip}:{port}')
 
+    with _lims.terminate_lock:
+        _lims.terminate = False
+
     _lims.thread = threading.Thread(target=stream_loop)
     _lims.thread.start()
 
