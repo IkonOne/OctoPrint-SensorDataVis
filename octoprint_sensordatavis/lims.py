@@ -28,12 +28,14 @@ def stream_loop():
         time.sleep(1)
 
         values_to_set = dict()
-        sensors = data_collector.get_summarized_readings()
-        _lims.logger.debug(f'Sending data to lims: {sensors}')
-        for key in sensors.keys():
-            sensor = sensors[key]
-            for metric in sensor:
-                values_to_set[key + '.' + metric] = sensor[metric]
+        # sensors = data_collector.get_summarized_readings()
+        values_to_set = data_collector.get_summarized_readings()
+        _lims.logger.debug(f'Sending data to lims: {values_to_set}')
+        # for key in sensors.keys():
+        #     sensor = sensors[key]
+        #     _lims.logger.debug(f'WTF is sensor???:\nkey: {key}\nsensor: {sensor}')
+        #     for metric in sensor:
+        #         values_to_set[key + '.' + metric] = sensor[metric]
         
         if not _lims.engine.set_current_data_values(values_to_set):
             _lims.logger.debug(f'[LIMS] Failed to set values...\n{values_to_set}')
