@@ -37,10 +37,13 @@ def stream_loop(msgQueue):
 
             try:
                 data = json.loads(decoded_line)
-                _dat.logger.debug(f'[Arduino] Successfully decoded json: {decoded_line}')
-                # msgQueue.put(data['sensors'])
+                # _dat.logger.debug(f'[Arduino] Successfully decoded json: {decoded_line}')
                 for sensor in data['sensors']:
-                    data_collector.record_metric(sensor['lims_field'], sensor['value'])
+                    if 'lims_field' in sensor.keys():
+                        data_collector.record_metric(sensor['lims_field'], sensor['value'])
+                    if 'values' in sensor.keys():
+                        for value in sensor['values']:
+                            data_collector.record_metric(value['lims_field'], value['value'])
             except JSONDecodeError as err:
                 _dat.logger.debug(f'[Arduino] Failed to decode json: {decoded_line}')
         

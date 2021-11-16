@@ -11,13 +11,16 @@ class Metric():
     def collect(self, reading) -> None:
         self.values.append(reading)
     
-    def summarize(self):
+    def summarize(self, data):
         arr = np.array(self.values)
-        return {
-            "StandardDeviation": np.std(arr),
-            "Average": np.mean(arr),
-            "Value": arr[-1]
-        }
+        data[f'{self.lims_field}.StandardDeviation'] = np.std(arr)
+        data[f'{self.lims_field}.Average'] = np.mean(arr)
+        data[f'{self.lims_field}.Value'] = arr[-1]
+        # return {
+        #     "StandardDeviation": np.std(arr),
+        #     "Average": np.mean(arr),
+        #     "Value": arr[-1]
+        # }
     
     def clear(self):
         self.values = []
@@ -31,11 +34,9 @@ class BedMeshMetrics():
     def clear(self):
         pass
 
-    def summarize(self):
-        return {
-            "Mesh": str(self.mesh),
-            "Flatness": self.flatness
-        }
+    def summarize(self, data):
+        data[f'{self.lims_field}.Mesh'] = str(self.mesh)
+        data[f'{self.lims_field}.Flatness'] = self.flatness
 
 
 _metrics_lock = threading.Lock()
@@ -75,7 +76,12 @@ def get_summarized_readings():
     data = {}
     with _metrics_lock:
         for lims_field in _metrics.keys():
-            data[lims_field] = _metrics[lims_field].summarize()
-            # _metrics[lims_field].clear()
+            _metrics[lims_field].summarize(data)
+        # for lims_field in _metrics.keys():
+        #     # # data[lims_field] = _metrics[lims_field].summarize()
+        #     # summaries = _metrics[lims_field].summarize()
+        #     # for summary in summaries:
+        #     #     data[f'{lims_field}.{summary["lims_field"]}'] = summary["value"]
+        #     # # _metrics[lims_field].clear()
         _metrics.clear()
     return data
