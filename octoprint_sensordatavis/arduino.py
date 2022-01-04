@@ -49,6 +49,7 @@ def stream_loop(msgQueue):
         
     _dat.conn.close()
     _dat.conn = None
+    _dat.logger.debug(f'[Arduino] Stopped streaming..')
 
 def get_ports():
     ports = serial.tools.list_ports.comports()

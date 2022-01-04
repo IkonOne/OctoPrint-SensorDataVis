@@ -26,10 +26,13 @@ class Metric():
         self.values = []
 
 class BedMeshMetrics():
-    def __init__(self, lims_field, mesh, flatness) -> None:
+    def __init__(self, lims_field, mesh, flatness, normal, theta, phi) -> None:
         self.lims_field = lims_field
         self.mesh = mesh
         self.flatness = flatness
+        self.normal = normal
+        self.theta = theta
+        self.phi = phi
     
     def clear(self):
         pass
@@ -37,6 +40,11 @@ class BedMeshMetrics():
     def summarize(self, data):
         data[f'{self.lims_field}.Mesh'] = str(self.mesh)
         data[f'{self.lims_field}.Flatness'] = self.flatness
+        data[f'{self.lims_field}.NormalX'] = self.normal[0]
+        data[f'{self.lims_field}.NormalY'] = self.normal[1]
+        data[f'{self.lims_field}.NormalZ'] = self.normal[2]
+        data[f'{self.lims_field}.Theta'] = self.theta
+        data[f'{self.lims_field}.Phi'] = self.phi
 
 
 _metrics_lock = threading.Lock()
@@ -69,8 +77,14 @@ def record_bed_mesh_data(mesh, probe_points):
     plane = lr.predict(probe_points).reshape(mesh.shape)
     flatness_mm = np.abs(np.max(mesh - plane) - np.min(mesh - plane))
 
+    n = np.array([-lr.coef_[0], -lr.coef_[1], 1])
+    n = n / np.linalg.norm(n)
+    
+    theta = np.rad2deg(np.arctan2(n[0], n[1]))
+    phi = np.rad2deg(np.arccos(np.dot([0,0,1],n)))
+
     with _metrics_lock:
-        _metrics["Facility.PrusaMK3.Bed"] = BedMeshMetrics("Facility.PrusaMK3.Bed", mesh, flatness_mm)
+        _metrics["Facility.PrusaMK3.Bed"] = BedMeshMetrics("Facility.PrusaMK3.Bed", mesh, flatness_mm, n, theta, phi)
 
 def get_summarized_readings():
     data = {}
