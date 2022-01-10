@@ -26,18 +26,20 @@ def stream_loop(msgQueue):
         with _dat.terminate_lock:
             if _dat.terminate:
                 break
+
+        _dat.logger.debug(f'[Arduino] loop...')
         
         line = _dat.conn.readline()
         if len(line) > 0:
             try:
                 decoded_line = line.decode()
             except UnicodeDecodeError:
-                _dat.logger.debug(f'[Arduino] Failed to decode utf-8: {line}')
+                _dat.logger.warning(f'[Arduino] Failed to decode utf-8: {line}')
                 continue
 
             try:
                 data = json.loads(decoded_line)
-                # _dat.logger.debug(f'[Arduino] Successfully decoded json: {decoded_line}')
+                _dat.logger.debug(f'[Arduino] Successfully decoded json: {decoded_line}')
                 for sensor in data['sensors']:
                     if 'lims_field' in sensor.keys():
                         data_collector.record_metric(sensor['lims_field'], sensor['value'])
