@@ -120,6 +120,16 @@ class SensordatavisPlugin(
             data_collector.record_bed_mesh_data(mesh, probe_points)
 
         return super().on_event(event, payload)
+
+    def handle_gcode_sent(self, comm, phase, cmd, cmd_type, gcode, subcode, tags):
+        for tag in tags:
+            name, value = tag.split(':')
+
+            if name == "fileline":
+                # self._logger.debug(f'[GCODE] line number: {value}')
+                data_collector.record_gcode_line("Facility.PrusaMK3", value)
+            
+        return None
     
     ##~~ Softwareupdate hook
 
@@ -158,5 +168,6 @@ def __plugin_load__():
 
     global __plugin_hooks__
     __plugin_hooks__ = {
-        "octoprint.plugin.softwareupdate.check_config": __plugin_implementation__.get_update_information
+        "octoprint.plugin.softwareupdate.check_config": __plugin_implementation__.get_update_information,
+        "octoprint.comm.protocol.gcode.sent": __plugin_implementation__.handle_gcode_sent,
     }

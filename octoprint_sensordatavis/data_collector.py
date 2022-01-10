@@ -46,6 +46,17 @@ class BedMeshMetrics():
         data[f'{self.lims_field}.Theta'] = self.theta
         data[f'{self.lims_field}.Phi'] = self.phi
 
+class GCodeMetrics():
+    def __init__(self, lims_field, line_number):
+        self.lims_field = lims_field
+        self.line_number = line_number
+    
+    def clear(self):
+        pass
+
+    def summarize(self, data):
+        data[f'{self.lims_field}.GCODE.LineNumber'] = self.line_number
+
 
 _metrics_lock = threading.Lock()
 _metrics = {}
@@ -60,6 +71,15 @@ def record_metric(lims_field, readings):
             metric = _metrics[lims_field]
         
         metric.collect(readings)
+
+def record_gcode_line(lims_field, line_number):
+    with _metrics_lock:
+        metric = None
+        if lims_field in _metrics.keys():
+            metric = _metrics[lims_field]
+        else:
+            _metrics[lims_field] = GCodeMetrics(lims_field, line_number)
+            metric = _metrics[lims_field]
     
 def record_bed_mesh_data(mesh, probe_points):
     """
