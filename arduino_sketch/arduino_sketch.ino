@@ -2,6 +2,7 @@
  * Required Libraries:
  *  - ArduinoJSON
  *  - DHT Sensor Library
+ *  - Adafruit Unified Sensor library
  */
 
 #include <ArduinoJson.h>
@@ -144,6 +145,62 @@ class ACS712ELCTRSensor : public Sensor {
   float _value;
 };
 
+class MainsCurrentSensor : public Sensor {
+  public:
+  static const int mVperAmp = 66;
+
+  public:
+  MainsCurrentSensor(const String& lims_field, uint8_t pin)
+  : Sensor(lims_field), _pin(pin), _value(0) { }
+
+  bool read() override {
+   
+  float MCresult;
+  int readValue;             //value read from the sensor
+  int maxValue = 0;          // store max value here
+  int minValue = 1024;          // store min value here
+  
+   uint32_t start_time = millis();
+   while((millis()-start_time) < 16) //sample for 1 Sec
+   {
+       readValue = analogRead(this->pin());
+       // see if you have a new maxValue
+       if (readValue > maxValue) 
+       {
+           /*record the maximum sensor value*/
+           maxValue = readValue;
+       }
+       if (readValue < minValue) 
+       {
+           /*record the minimum sensor value*/
+           minValue = readValue;
+       }
+   }
+   
+   // Subtract min from max
+   MCresult = ((maxValue - minValue) * 5.0)/1024.0;
+   float VRMS = (MCresult/2.0) *0.707;  //root 2 is 0.707
+   float AmpsRMS = (VRMS * 1000)/mVperAmp;
+    this->value(AmpsRMS);
+    return true;
+  }
+
+  void publish(JsonObject& obj) const override {
+    obj["lims_field"] = this->lims_field();
+    obj["value"] = this->value();
+  }
+
+  const uint8_t pin() const { return this->_pin; }
+  
+  const float value() const { return this->_value; }
+  void value(float value) { this->_value = value; }
+
+  private:
+  uint8_t _pin;
+  float _value;
+};
+
+
 class FilamentDiameterSensor : public Sensor {
   public:
   static const int LUT_SIZE = 4;
@@ -265,18 +322,18 @@ void setup() {
   Serial.begin(115200);
   while (!Serial) continue;
 
-  num_sensors = 2;
+  num_sensors = 3;
   sensors = new Sensor*[num_sensors];
 
-  sensors[0] = new FilamentDiameterSensor("Facility.PrusaMK3.FilamentDiameter", A0);
+  sensors[0] = new FilamentDiameterSensor("Facility.PrusaMK3.FilamentDiameter", A5);
   sensors[1] = new DHTSensor("Facility.PrusaMK3.DHTSensor", 2);
   // sensors[1] = new ACS712ELCTRSensor("Facility.PrsuaMK3.MotorCurrent.E0", A1, ACS712ELCTRSensor::sensitivity_30A);
   // sensors[2] = new ACS712ELCTRSensor("Facility.PrusaMK3.MotorCurrent.X0", A2, ACS712ELCTRSensor::sensitivity_30A);
   // sensors[3] = new ACS712ELCTRSensor("Facility.PrusaMK3.MotorCurrent.Y0", A3, ACS712ELCTRSensor::sensitivity_30A);
   // sensors[4] = new ACS712ELCTRSensor("Facility.PrusaMK3.MotorCurrent.Z0", A4, ACS712ELCTRSensor::sensitivity_30A);
-  // sensors[5] = new ACS712ELCTRSensor("Facility.PrusaMK3.MotorCurrent.Z1", A5, ACS712ELCTRSensor::sensitivity_30A);
+  // sensors[2] = new ACS712ELCTRSensor("Facility.PrusaMK3.MotorCurrent.Z1", A5, ACS712ELCTRSensor::sensitivity_30A);
   // sensors[0] = new EncoderSensor("Encoder", 2, 3);
-  // sensors[0] = new AnalogSensor("Facility.PrusaMK3.FilamentDiameter", A0);
+   sensors[2] = new  MainsCurrentSensor("Facility.PrusaMK3.MainsCurrent", A0);
   // sensors[1] = new AnalogSensor("Facility.PrusaMK3.MotorCurrent.E0", A1);
   // sensors[2] = new AnalogSensor("Facility.PrusaMK3.MotorCurrent.X0", A2);
   // sensors[3] = new AnalogSensor("Facility.PrusaMK3.MotorCurrent.Y0", A3);
