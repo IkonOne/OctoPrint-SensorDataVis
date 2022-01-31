@@ -3,6 +3,7 @@ from __future__ import absolute_import
 from flask import json, jsonify, request
 import octoprint_sensordatavis.arduino as arduino
 import octoprint_sensordatavis.lims as lims
+import octoprint_sensordatavis.data_collector as data_collector
 import itertools
 import numpy as np
 
@@ -21,8 +22,26 @@ class SensordatavisPlugin(
     octoprint.plugin.SettingsPlugin,
     octoprint.plugin.TemplatePlugin,
     octoprint.plugin.BlueprintPlugin,
-    octoprint.plugin.EventHandlerPlugin
+    octoprint.plugin.EventHandlerPlugin,
+    octoprint.plugin.StartupPlugin
 ):
+
+    ##-- StartupPlugin mixin
+
+    def on_after_startup(self):
+        data_collector._logger = self._logger
+        
+        lims_ip = self._settings.get(["lims_ip"])
+        lims_port = self._settings.get(["lims_port"])
+        lims_endpoint = self._settings.get(["lims_endpoint"])
+        lims.start_streaming(lims_ip, lims_port, lims_endpoint, self._logger)
+
+        port = self._settings.get(["arduino_port"])
+        baud = self._settings.get(["arduino_baud"])
+        sensors = self._settings.get(["arduino_sensors"])
+        arduino.start_streaming(port, baud, lims.msgQueue, sensors, self._logger)
+
+
     ##-- AssetPlugin mixin
 
     # def get_assets(self):
@@ -73,22 +92,6 @@ class SensordatavisPlugin(
 
     def on_event(self, event, payload):
         # printer states: https://docs.octoprint.org/en/master/modules/printer.html#octoprint.printer.PrinterInterface.get_state_id
-        if event == 'PrinterStateChanged':
-            self._logger.debug('Printer State : {1}'.format(event, payload))
-            state_id = payload['state_id']
-            if state_id == 'STARTING':
-                lims_ip = self._settings.get(["lims_ip"])
-                lims_port = self._settings.get(["lims_port"])
-                lims_endpoint = self._settings.get(["lims_endpoint"])
-                lims.start_streaming(lims_ip, lims_port, lims_endpoint, self._logger)
-
-                port = self._settings.get(["arduino_port"])
-                baud = self._settings.get(["arduino_baud"])
-                sensors = self._settings.get(["arduino_sensors"])
-                arduino.start_streaming(port, baud, lims.msgQueue, sensors, self._logger)
-            if state_id in ['OPERATIONAL', 'CANCELLLING']:
-                arduino.stop_streaming()
-                lims.stop_streaming()
         
         if event == 'plugin_bedlevelvisualizer_mesh_data_collected':
             # LOLOLO : Did you know that Events.ALL_CAPS_EVENT_NAMES != 'ALL_CAPS_EVENT_NAMES'
