@@ -3,6 +3,9 @@ import threading
 
 from octoprint_sensordatavis import lims
 
+_logger = None
+
+
 class Metric():
     def __init__(self, lims_field) -> None:
         self.values = []
@@ -109,6 +112,7 @@ def record_bed_mesh_data(mesh, probe_points):
 def get_summarized_readings():
     data = {}
     with _metrics_lock:
+        _logger.debug(f'[DATA_COLLECTOR] Metrics keys: {_metrics.keys()}')
         for lims_field in _metrics.keys():
             _metrics[lims_field].summarize(data)
         # for lims_field in _metrics.keys():
