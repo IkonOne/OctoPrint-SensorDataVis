@@ -355,8 +355,6 @@ void loop() {
   // StaticJsonDocument<384> doc;
   StaticJsonDocument<1024> doc;
 
-  delay(100);
-
   auto json = doc.createNestedArray("sensors");
   for (int i = 0; i < num_sensors; ++i) {
     if (sensors[i]->read()) {
