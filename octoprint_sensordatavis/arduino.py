@@ -27,8 +27,6 @@ def stream_loop(msgQueue):
             if _dat.terminate:
                 break
 
-        _dat.logger.debug(f'[Arduino] loop...')
-        
         line = _dat.conn.readline()
         if len(line) > 0:
             try:
