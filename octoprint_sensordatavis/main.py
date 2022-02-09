@@ -1,0 +1,36 @@
+import logging
+import sys
+
+from octoprint_sensordatavis import arduino
+from octoprint_sensordatavis import config
+from octoprint_sensordatavis import data_collector
+from octoprint_sensordatavis import lims
+
+def main():
+    logger = logging.getLogger('my.arduino')
+    logger.setLevel(logging.DEBUG)
+    ch = logging.StreamHandler(sys.stdout)
+    ch.setLevel(logging.DEBUG)
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    ch.setFormatter(formatter)
+    logger.addHandler(ch)
+
+    data_collector._logger = logger
+
+    arduino.start_streaming(
+        config.ARDUINO_PORT,
+        config.ARDUINO_BAUD, 
+        None,
+        None,
+        logger
+    )
+
+    lims.start_streaming(
+        config.LIMS_IP,
+        config.LIMS_PORT,
+        config.LIMS_ENDPOINT,
+        logger
+    )
+
+if __name__ == '__main__':
+    main()
