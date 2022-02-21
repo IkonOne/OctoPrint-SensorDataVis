@@ -8,5 +8,6 @@ dist
 .DS_Store
 *.zip
 
+env/
 venv/
 OctoPrint_SensorDataVis.egg-info/
