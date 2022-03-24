@@ -1,10 +1,10 @@
 import logging
 import sys
 
-from octoprint_sensordatavis import arduino
-from octoprint_sensordatavis import config
-from octoprint_sensordatavis import data_collector
-from octoprint_sensordatavis import lims
+import arduino
+import config
+import data_collector
+import lims
 
 def main():
     logger = logging.getLogger('my.arduino')

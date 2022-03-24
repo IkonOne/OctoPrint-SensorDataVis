@@ -2,7 +2,7 @@ import threading
 import time
 import queue
 from solutionfamily.engine import Engine
-from . import data_collector
+import data_collector
 
 class Lims():
     def __init__(self) -> None:

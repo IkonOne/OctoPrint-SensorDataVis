@@ -1,7 +1,7 @@
 import numpy as np
 import threading
 
-from octoprint_sensordatavis import lims
+import lims
 
 _logger = None
 

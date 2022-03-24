@@ -1,5 +1,5 @@
 from json.decoder import JSONDecodeError
-from octoprint_sensordatavis import data_collector
+import data_collector
 import serial
 import serial.tools.list_ports
 import threading
