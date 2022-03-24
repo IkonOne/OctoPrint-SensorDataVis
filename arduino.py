@@ -38,12 +38,14 @@ def stream_loop(msgQueue):
             try:
                 data = json.loads(decoded_line)
                 # _dat.logger.debug(f'[Arduino] Successfully decoded json: {decoded_line}')
-                for sensor in data['sensors']:
-                    if 'lims_field' in sensor.keys():
-                        data_collector.record_metric(sensor['lims_field'], sensor['value'])
-                    if 'values' in sensor.keys():
-                        for value in sensor['values']:
-                            data_collector.record_metric(value['lims_field'], value['value'])
+                if 'sensors' in data:
+                    for sensor in data['sensors']:
+                        if 'lims_field' in sensor and 'value' in sensor:
+                            data_collector.record_metric(sensor['lims_field'], sensor['value'])
+                        if 'values' in sensor:
+                            for value in sensor['values']:
+                                if 'lims_field' in value and 'value' in value:
+                                    data_collector.record_metric(value['lims_field'], value['value'])
             except JSONDecodeError as err:
                 _dat.logger.debug(f'[Arduino] Failed to decode json: {decoded_line}')
         
@@ -62,7 +64,7 @@ def start_streaming(port, baud, msgQueue, sensors, logger):
     _dat.logger = logger
     
     _dat.logger.debug(f'[Arduino] Attempting to connect to Arduino at: {port} : {baud}')
-    _dat.conn = serial.Serial(port, baudrate=baud, timeout=2, exclusive=True)
+    _dat.conn = serial.Serial(port, baudrate=baud, timeout=2)
     if not _dat.conn.is_open:
         _dat.logger.debug(f'[Arduino] Failed to connect to port: {port}')
 
