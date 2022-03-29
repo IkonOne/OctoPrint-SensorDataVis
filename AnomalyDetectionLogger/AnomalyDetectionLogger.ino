@@ -10,6 +10,10 @@ File dataLog;
 const int chipSelect = 4;
 String fileName = "";
 String command = "";
+boolean recording = false;
+int val2 = 0;
+float y1 = 0;
+float y2 = 0;
 
 void printMenu() {
   // put your setup code here, to run once:
@@ -25,16 +29,15 @@ void setup() {
   pinMode (outputA,INPUT);
   pinMode (outputB,INPUT);
    
-  Serial.begin (115200);
+  Serial.begin(115200);
   // Reads the initial state of the outputA
   aLastState = digitalRead(outputA);
 
   //set up the SD card
-  Serial.println("Enter file name: ");
   fileName = Serial.readString();
-  Serial.setTimeout(6000);
-  if (fileName.equals(""))
-    fileName = "test.csv";   
+  //Serial.setTimeout(10);
+  //if (fileName.equals(""))
+  fileName = "test.csv";   
   Serial.println("Initializing SD card...");
   pinMode(chipSelect, OUTPUT); //chip select pin must be set to output mode
   delay(100);
@@ -57,11 +60,14 @@ void setup() {
 
 void loop() {
   if(Serial.available()){
-    command = Serial.readString();
+    command = Serial.readString();   
   }
   if(command.equals("1\n")){
     aState = digitalRead(outputA); // Reads the "current" state of the outputA
     // If the previous and the current state of the outputA are different, that means a Pulse has occured
+    if(counter == 0){
+      Serial.println("Recording...");
+    }
     if (aState != aLastState){
       // If the outputB state is different to the outputA state, that means the encoder is rotating clockwise
       if (digitalRead(outputB) != aState) {
@@ -69,11 +75,12 @@ void loop() {
       } else {
         counter --;
       }
-      Serial.print("Position: ");
+      //Serial.print("Position: ");
       Serial.println(counter);
       //now write to the file
-      //dataLog.println("current position: " + (String)counter);
-      dataLog.println((String)counter + ",1,2");
+      y1 = (0.006707591*analogRead(0)) - 0.960308229;
+      y2 = (0.004275653*analogRead(1)) + 0.310058525;
+      dataLog.println((String)counter + " " +  (String)y1 + " " +  (String)y2);
     }
     aLastState = aState; // Updates the previous state of the outputA with the current state
   }else if(command.equals("2\n")){
@@ -91,5 +98,8 @@ void loop() {
   }else if(!command.equals("")){
     Serial.println("Invalid Command");
     printMenu();
+    while(!Serial.available()){
+      delay(500);
+    }
   }
 }
