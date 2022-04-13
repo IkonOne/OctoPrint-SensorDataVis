@@ -5,6 +5,7 @@ import arduino
 import config
 import data_collector
 import lims
+import rawData
 
 def main():
     logger = logging.getLogger('my.arduino')
@@ -25,7 +26,14 @@ def main():
         logger
     )
 
-    lims.start_streaming(
+    # lims.start_streaming(
+    #     config.LIMS_IP,
+    #     config.LIMS_PORT,
+    #     config.LIMS_ENDPOINT,
+    #     logger
+    # )
+    
+    rawData.start_streaming(
         config.LIMS_IP,
         config.LIMS_PORT,
         config.LIMS_ENDPOINT,
