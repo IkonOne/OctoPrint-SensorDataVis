@@ -3,7 +3,9 @@ import time
 import queue
 from solutionfamily.engine import Engine
 import data_collector
-import csv
+from api_oprint import APIOctoPrint
+import config
+import time
 
 class RawData():
     def __init__(self) -> None:
@@ -21,23 +23,48 @@ msgQueue = queue.Queue()
 
 def stream_loop():
     _raw.logger.debug('[RAW DATA] Started Streaming...')
-    var = 0
+    api = APIOctoPrint(api_url=config.API_URL, api_secret=config.API_SECRET)
+    j = api.get_api_job()
+    j['job']['file']['name'] = 'Larry.gcode'#this line for testing only
+    #eventually, info may need to be put outside the while TRUE loop
+    #^ above is old, may need to logically restructure where code for filename is
+    print(j['job']['file']['name'])
+    dotIndex = j['job']['file']['name'].index('.')
+    timeStamp = time.strftime("%Y%m%d-%H%M%S")
+    fileName = 'data/' + j['job']['file']['name'][0:dotIndex] + timeStamp + '.csv'
+    print(fileName)
+    with open(fileName, 'w') as file:
+        file.write('opening line')
+    file.close()
+    var = 1
     while var < 10:
+        print('while')
+    #runs infinetly if 'printing' is never set to true
+    #will get updated to while TRUE
+
+
+    #get gcode name from rest api and save it--done, lines 27, 28, 33
+    #get gcode from rest api and name .csv same as name.gcode--done, lines 31, 33
+    #need way to determine unique print if .gcode has been run and saved already--done, lines 32, 33
         with _raw.terminate_lock:
             if _raw.terminate:
                 break
         
         time.sleep(1)
-        
-        # values_to_set = dict()
-        # sensors = data_collector.get_summarized_readings()
-        values_to_set = data_collector.get_summarized_readings()
-        _raw.logger.debug(f'[RawData] Sending data to file: {values_to_set}')
-        with open('./data.csv', 'a') as file:
-            for key in values_to_set.keys():
-                file.write("%s, %s\n" % (key, values_to_set[key]))
-        file.close()
-        var+=1
+
+        r = api.get_api_printer()
+        state_flags = r['state']['flags']
+        print(state_flags)
+        if(True==True):
+            # values_to_set = dict()
+            # sensors = data_collector.get_summarized_readings()
+            values_to_set = data_collector.get_summarized_readings()
+            _raw.logger.debug(f'[RawData] Sending data to file: {values_to_set}')
+            with open(fileName, 'a') as file:
+                for key in values_to_set.keys():
+                    file.write("%s, %s\n" % (key, values_to_set[key]))
+            file.close()
+            var+=1
 
     _raw.logger.debug('[RawData] Stopped Streaming...')
     while not msgQueue.empty():
