@@ -25,7 +25,6 @@ def stream_loop():
     _raw.logger.debug('[RAW DATA] Started Streaming...')
     api = APIOctoPrint(api_url=config.API_URL, api_secret=config.API_SECRET)
     j = api.get_api_job()
-    j['job']['file']['name'] = 'Larry.gcode'#this line for testing only
     dotIndex = j['job']['file']['name'].index('.')
     timeStamp = time.strftime("%Y%m%d-%H%M%S")
     fileName = 'data/' + j['job']['file']['name'][0:dotIndex] + timeStamp + '.csv'
@@ -35,16 +34,8 @@ def stream_loop():
             file.write("%s,"%key)
         file.write("\n")
     file.close()
-    var = 1
-    while var < 10:
-        print('while')
-    #runs infinetly if 'printing' is never set to true
-    #will get updated to while TRUE
+    while True:
 
-
-    #get gcode name from rest api and save it--done, lines 27, 28, 33
-    #get gcode from rest api and name .csv same as name.gcode--done, lines 31, 33
-    #need way to determine unique print if .gcode has been run and saved already--done, lines 32, 33
         with _raw.terminate_lock:
             if _raw.terminate:
                 break
@@ -54,8 +45,7 @@ def stream_loop():
         r = api.get_api_printer()
         state_flags = r['state']['flags']
         print(state_flags)
-        #if(state_flags['printing']==True):
-        if(True):#Delete me after testing
+        if(state_flags['printing']==True):
             # values_to_set = dict()
             # sensors = data_collector.get_summarized_readings()
             values_to_set = data_collector.get_summarized_readings()
