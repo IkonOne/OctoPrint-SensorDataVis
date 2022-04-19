@@ -26,15 +26,14 @@ def stream_loop():
     api = APIOctoPrint(api_url=config.API_URL, api_secret=config.API_SECRET)
     j = api.get_api_job()
     j['job']['file']['name'] = 'Larry.gcode'#this line for testing only
-    #eventually, info may need to be put outside the while TRUE loop
-    #^ above is old, may need to logically restructure where code for filename is
-    print(j['job']['file']['name'])
     dotIndex = j['job']['file']['name'].index('.')
     timeStamp = time.strftime("%Y%m%d-%H%M%S")
     fileName = 'data/' + j['job']['file']['name'][0:dotIndex] + timeStamp + '.csv'
-    print(fileName)
+    values_to_set = data_collector.get_summarized_readings()
     with open(fileName, 'w') as file:
-        file.write('opening line')
+        for key in values_to_set.keys():
+            file.write("%s,"%key)
+        file.write("\n")
     file.close()
     var = 1
     while var < 10:
@@ -55,14 +54,16 @@ def stream_loop():
         r = api.get_api_printer()
         state_flags = r['state']['flags']
         print(state_flags)
-        if(True==True):
+        #if(state_flags['printing']==True):
+        if(True):#Delete me after testing
             # values_to_set = dict()
             # sensors = data_collector.get_summarized_readings()
             values_to_set = data_collector.get_summarized_readings()
             _raw.logger.debug(f'[RawData] Sending data to file: {values_to_set}')
             with open(fileName, 'a') as file:
                 for key in values_to_set.keys():
-                    file.write("%s, %s\n" % (key, values_to_set[key]))
+                    file.write("%s," % (values_to_set[key]))
+                file.write("\n")
             file.close()
             var+=1
 
