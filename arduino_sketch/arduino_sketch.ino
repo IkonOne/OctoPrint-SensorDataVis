@@ -202,29 +202,15 @@ class MainsCurrentSensor : public Sensor {
 
 
 class FilamentDiameterSensor : public Sensor {
-  public:
-  static const int LUT_SIZE = 4;
-  static const float LUT[LUT_SIZE][2];
-  
-  public:
-  FilamentDiameterSensor(const String& lims_field, uint8_t pin)
-    : Sensor(lims_field), _pin(pin), _value(0) {}
+public:
+  FilamentDiameterSensor(const String& lims_field, float slope, float y_intercept, uint8_t pin)
+    : Sensor(lims_field), _slope(slope), _y_intercept(y_intercept), _pin(pin), _value(0) {}
   
   bool read() override {
     int analog_raw = analogRead(this->pin());
-    float analog_value = 0;
-    for (int i = 1; i < LUT_SIZE; ++i) {
-      if (LUT[i][0] > analog_raw) {
-        analog_value = mapf(
-          analog_raw,
-          LUT[i-1][0], LUT[i][0], // from ADC
-          LUT[i-1][1], LUT[i][1]  // to current
-        );
-        break;
-      }
-    }
-
-    this->value(analog_value);
+    this->value(
+      (float)analog_raw * this->slope() + this->y_intercept()
+    );
     return true;
   }
 
@@ -237,19 +223,18 @@ class FilamentDiameterSensor : public Sensor {
 
   const float value() const { return this->_value; }
   void value(float value) { this->_value = value; }
+
+  const float slope() const { return this->_slope; }
+  void slope(float slope) { this->_slope = slope; }
+
+  const float y_intercept() const { return this->_y_intercept; }
+  void y_intercept(float y_intercept) { this->_y_intercept = y_intercept; }
   
   private:
   uint8_t _pin;
+  float _slope;
+  float _y_intercept;
   float _value;
-};
-
-// Lookup table for currents within ranges
-// {analogRead value, current}
-const float FilamentDiameterSensor::LUT[FilamentDiameterSensor::LUT_SIZE][2] = {
-  {13, 0},
-  {70, 1.53},
-  {195, 1.74},
-  {284, 2.00}
 };
 
 // class EncoderSensor : public Sensor {
@@ -315,30 +300,14 @@ class DHTSensor : public Sensor {
     float _humidity;
 };
 
-Sensor** sensors;
-int num_sensors;
+Sensor* sensors[] = {
+  new FilamentDiameterSensor("Facility.PrusaMK3.FilamentDiameter", 0.001890411, 1.448858395, A0)
+};
+const int num_sensors = sizeof(sensors)/sizeof(sensors[0]);
 
 void setup() {
   Serial.begin(115200);
   while (!Serial) continue;
-
-  num_sensors = 3;
-  sensors = new Sensor*[num_sensors];
-
-  sensors[0] = new FilamentDiameterSensor("Facility.PrusaMK3.FilamentDiameter", A5);
-  sensors[1] = new DHTSensor("Facility.PrusaMK3.DHTSensor", 2);
-  // sensors[1] = new ACS712ELCTRSensor("Facility.PrsuaMK3.MotorCurrent.E0", A1, ACS712ELCTRSensor::sensitivity_30A);
-  // sensors[2] = new ACS712ELCTRSensor("Facility.PrusaMK3.MotorCurrent.X0", A2, ACS712ELCTRSensor::sensitivity_30A);
-  // sensors[3] = new ACS712ELCTRSensor("Facility.PrusaMK3.MotorCurrent.Y0", A3, ACS712ELCTRSensor::sensitivity_30A);
-  // sensors[4] = new ACS712ELCTRSensor("Facility.PrusaMK3.MotorCurrent.Z0", A4, ACS712ELCTRSensor::sensitivity_30A);
-  // sensors[2] = new ACS712ELCTRSensor("Facility.PrusaMK3.MotorCurrent.Z1", A5, ACS712ELCTRSensor::sensitivity_30A);
-  // sensors[0] = new EncoderSensor("Encoder", 2, 3);
-   sensors[2] = new  MainsCurrentSensor("Facility.PrusaMK3.MainsCurrent", A0);
-  // sensors[1] = new AnalogSensor("Facility.PrusaMK3.MotorCurrent.E0", A1);
-  // sensors[2] = new AnalogSensor("Facility.PrusaMK3.MotorCurrent.X0", A2);
-  // sensors[3] = new AnalogSensor("Facility.PrusaMK3.MotorCurrent.Y0", A3);
-  // sensors[4] = new AnalogSensor("Facility.PrusaMK3.MotorCurrent.Z0", A4);
-  // sensors[5] = new AnalogSensor("Facility.PrusaMK3.MotorCurrent.Z1", A5);
 
   for (int i = 0; i < num_sensors; ++i)
     sensors[i]->begin();

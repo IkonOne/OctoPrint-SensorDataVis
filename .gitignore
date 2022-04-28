@@ -12,3 +12,4 @@ env/
 venv/
 OctoPrint_SensorDataVis.egg-info/
 output.log
+data/
