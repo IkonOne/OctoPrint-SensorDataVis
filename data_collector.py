@@ -16,9 +16,11 @@ class Metric():
     
     def summarize(self, data):
         arr = np.array(self.values)
-        data[f'{self.lims_field}.StandardDeviation'] = np.std(arr)
-        data[f'{self.lims_field}.Average'] = np.mean(arr)
-        data[f'{self.lims_field}.Value'] = arr[-1]
+        data[f'{self.lims_field}.StandardDeviation'] = float(np.std(arr))
+        data[f'{self.lims_field}.Average'] = float(np.mean(arr))
+        data[f'{self.lims_field}.Value'] = float(arr[-1])
+        data[f'{self.lims_field}.Min'] = float(np.min(arr))
+        data[f'{self.lims_field}.Max'] = float(np.max(arr))
         # return {
         #     "StandardDeviation": np.std(arr),
         #     "Average": np.mean(arr),
@@ -121,5 +123,9 @@ def get_summarized_readings():
         #     # for summary in summaries:
         #     #     data[f'{lims_field}.{summary["lims_field"]}'] = summary["value"]
         #     # # _metrics[lims_field].clear()
-        _metrics.clear()
+        # _metrics.clear()
     return data
+
+def clear_summarized_readings():
+    with _metrics_lock:
+        _metrics.clear()
