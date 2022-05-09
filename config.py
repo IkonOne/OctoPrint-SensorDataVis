@@ -1,5 +1,5 @@
 #ARDUINO_PORT = '/dev/ttyACM0'
-ARDUINO_PORT = 'COM3'
+ARDUINO_PORT = 'COM3' #use this for testing with a different arduino
 ARDUINO_BAUD = 115200
 
 LIMS_IP = '192.168.0.190'
