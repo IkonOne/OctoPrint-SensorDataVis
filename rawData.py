@@ -25,6 +25,7 @@ def stream_loop():
     _raw.logger.debug('[RAW DATA] Started Streaming...')
     api = APIOctoPrint(api_url=config.API_URL, api_secret=config.API_SECRET)
     j = api.get_api_job()
+    j['job']['file']['name'] = 'lewis.lewis' #delete me
     dotIndex = j['job']['file']['name'].index('.')
     timeStamp = time.strftime("%Y%m%d-%H%M%S")
     fileName = 'data/' + j['job']['file']['name'][0:dotIndex] + timeStamp + '.csv'
@@ -34,7 +35,8 @@ def stream_loop():
             file.write("%s,"%key)
         file.write("\n")
     file.close()
-    while True:
+    var = 0
+    while var<4:
 
         with _raw.terminate_lock:
             if _raw.terminate:
@@ -42,9 +44,11 @@ def stream_loop():
         
         time.sleep(1)
 
+
         r = api.get_api_printer()
         state_flags = r['state']['flags']
         print(state_flags)
+        state_flags['printing']=True#delete me
         if(state_flags['printing']==True):
             # values_to_set = dict()
             # sensors = data_collector.get_summarized_readings()

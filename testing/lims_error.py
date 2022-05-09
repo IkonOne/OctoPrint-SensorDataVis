@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+
+#made by Erin to be sent to Nat to replicate hole in error on limsbox
 import time
 import logging
 import sys

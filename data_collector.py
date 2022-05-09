@@ -1,5 +1,6 @@
 import numpy as np
 import threading
+import config
 
 import lims
 
@@ -16,11 +17,11 @@ class Metric():
     
     def summarize(self, data):
         arr = np.array(self.values)
-        data[f'{self.lims_field}.StandardDeviation'] = float(np.std(arr))
-        data[f'{self.lims_field}.Average'] = float(np.mean(arr))
-        data[f'{self.lims_field}.Value'] = float(arr[-1])
-        data[f'{self.lims_field}.Min'] = float(np.min(arr))
-        data[f'{self.lims_field}.Max'] = float(np.max(arr))
+        data[f'{config.LIMS_ENDPOINT}.{self.lims_field}.StandardDeviation'] = float(np.std(arr))
+        data[f'{config.LIMS_ENDPOINT}.{self.lims_field}.Average'] = float(np.mean(arr))
+        data[f'{config.LIMS_ENDPOINT}.{self.lims_field}.Value'] = float(arr[-1])
+        data[f'{config.LIMS_ENDPOINT}.{self.lims_field}.Min'] = float(np.min(arr))
+        data[f'{config.LIMS_ENDPOINT}.{self.lims_field}.Max'] = float(np.max(arr))
         # return {
         #     "StandardDeviation": np.std(arr),
         #     "Average": np.mean(arr),

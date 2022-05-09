@@ -1,13 +1,13 @@
 /**
  * Required Libraries:
- *  - ArduinoJSON
+ *  - ArduinoJSON 
  *  - DHT Sensor Library
- *  - Adafruit Unified Sensor library
+ *  - Adafruit Unified Sensor library https://www.pjrc.com/teensy/td_libs_Encoder.html
  */
 
 #include <ArduinoJson.h>
 #include <DHT.h>
-// #include <Encoder.h>
+// #include <Encoder.h> //https://www.pjrc.com/teensy/td_libs_Encoder.html
 
 const float VCC = 5.0;
 const float QOV = 0.5 * VCC;
@@ -106,9 +106,9 @@ class AnalogSensor : public Sensor {
 // Current sensor
 class ACS712ELCTRSensor : public Sensor {
   public:
-  static const float sensitivity_05B = 0.185;
-  static const float sensitivity_20A = 0.100;
-  static const float sensitivity_30A = 0.066;
+  static constexpr float sensitivity_05B = 0.185;
+  static constexpr float sensitivity_20A = 0.100;
+  static constexpr float sensitivity_30A = 0.066;
 
   public:
   ACS712ELCTRSensor(const String& lims_field, uint8_t pin, float sensitivity)
@@ -301,7 +301,19 @@ class DHTSensor : public Sensor {
 };
 
 Sensor* sensors[] = {
-  new FilamentDiameterSensor("Facility.PrusaMK3.FilamentDiameter", 0.001890411, 1.448858395, A0)
+  new FilamentDiameterSensor("FilamentDiameter", 0.001890411, 1.448858395, A0),
+  new FilamentDiameterSensor("Facility.PrusaMK31", 0.001890411, 1.448858395, A0),
+  new FilamentDiameterSensor("Facility.PrusaMK32", 0.001890411, 1.448858395, A0),
+  new FilamentDiameterSensor("Facility.PrusaMK33", 0.001890411, 1.448858395, A0),
+  new FilamentDiameterSensor("Facility.PrusaMK34", 0.001890411, 1.448858395, A0),
+  new FilamentDiameterSensor("Facility.PrusaMK35", 0.001890411, 1.448858395, A0),
+  new FilamentDiameterSensor("Facility.PrusaMK36", 0.001890411, 1.448858395, A0),
+  new FilamentDiameterSensor("Facility.PrusaMK37", 0.001890411, 1.448858395, A0),
+  new FilamentDiameterSensor("Facility.PrusaMK38", 0.001890411, 1.448858395, A0),
+  new FilamentDiameterSensor("Facility.PrusaMK39", 0.001890411, 1.448858395, A0),
+  new FilamentDiameterSensor("Facility.PrusaMK310", 0.001890411, 1.448858395, A0),
+  new FilamentDiameterSensor("Facility.PrusaMK311", 0.001890411, 1.448858395, A0),
+  new FilamentDiameterSensor("Facility.PrusaMK312", 0.001890411, 1.448858395, A0)
 };
 const int num_sensors = sizeof(sensors)/sizeof(sensors[0]);
 
