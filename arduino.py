@@ -63,7 +63,7 @@ def get_ports():
     devices = map(lambda p : p.device, ports)
     return list(devices)
 
-def start_streaming(port, baud, msgQueue, sensors, logger):
+def start_streaming(port, baud, msgQueue, sensors, logger): #delete sensors?
     if _dat.conn is not None:
         return
     _dat.logger = logger
