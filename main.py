@@ -17,7 +17,7 @@ def main():
     ch.setFormatter(formatter)
     logger.addHandler(ch)
 
-    fh = logging.FileHandler('output.log')
+    fh = logging.FileHandler('output.log') #delete next four lines?
     fh.setLevel(logging.INFO)
     fh.setFormatter(formatter)
     logger.addHandler(fh)
