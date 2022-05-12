@@ -43,6 +43,17 @@ def stream_loop(msgQueue):
             try:
                 data = json.loads(decoded_line)
                 # _dat.logger.debug(f'[Arduino] Successfully decoded json: {decoded_line}')
+                
+                #START HERE
+                
+                
+                
+                
+                
+                
+                
+                
+                
                 if 'sensors' in data:
                     for sensor in data['sensors']:
                         if 'lims_field' in sensor and 'value' in sensor:
