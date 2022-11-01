@@ -1,0 +1,28 @@
+#include <Wire.h>
+#include <avr/io.h>
+#include <avr/interrupt.h>
+#define F_CPU 16500000UL
+volatile byte* adc_val_ptr;
+float adc_val;
+
+void adc_setup(){
+ DDRB|=(1<<PB2);         //PB2 as output to activate LED
+ ADCSRA|=(1<<ADEN);      //Enable ADC module
+ ADMUX = 0b00000011; // configuring PB3 to take input
+ ADCSRB=0x00;           //Configuring free running mode
+ ADCSRA|=(1<<ADSC)|(1<<ADATE);   //Start ADC conversion and enabling Auto trigger
+}
+
+void requestEvent() {
+  Wire.write((byte*)&adc_val_processed, 4);
+}
+void setup() {
+  adc_setup();
+  Wire.begin(0x02);
+}
+void loop(){
+    adc_val=(ADCH<<8)|ADCL;   //Reading ADCH and combining the data
+    //adc_val_proccessed = *add processing (calibration curve here)*
+    ADCSRA|=(1<<ADIF);       //Resets soure register
+    Wire.onRequest(requestEvent);
+}
