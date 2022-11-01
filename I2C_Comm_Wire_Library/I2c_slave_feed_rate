@@ -1,0 +1,35 @@
+#include <Wire.h>
+#define CLK 0
+#define DT 1
+int CLK_State;                 //Control knob states needed to register rotation
+int CLK_LastState;
+byte pos_m;
+const double pi = 3.14159;
+volatile byte* pos_ptr;
+float pos;
+
+void requestEvent() {
+  Wire.write((byte*)&pos, 4);
+}
+
+void setup() {
+  // put your setup code here, to run once:
+  pinMode(CLK,INPUT);         //Control knob states,
+  pinMode(DT,INPUT);
+  CLK_LastState = digitalRead(CLK);
+  Wire.begin(3); //enable i2c communications
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+    if (CLK_State != CLK_LastState){
+    // If the DT state is different to the CLK state, that means the encoder is rotating clockwise
+      if (digitalRead(DT) != CLK_State)
+        pos_m -= 2*pi*0.00149/4;          //The diameter increases/decreases by 1 unit per control knob
+      else             
+        pos_m += 2*pi*0.00149/4;        //May need to be fine tuned for incrementation
+    }
+  CLK_LastState = CLK_State;   //reset the last state of the control knob
+  Wire.onRequest(requestEvent);
+  
+}
