@@ -23,7 +23,7 @@ void setup() {
 }
 void loop(){
     adc_val=(ADCH<<8)|ADCL;   //Reading ADCH and combining the data
-    adc_val_proccessed = *add processing (calibration curve here)*
+    //adc_val_processed = *add processing (calibration curve here)*
     ADCSRA|=(1<<ADIF);       //Resets soure register
     Wire.onRequest(requestEvent);
 }
